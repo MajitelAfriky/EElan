@@ -2,11 +2,17 @@ import socket
 import struct
 
 def listen_for_sacn_data():
-    UDP_IP = "127.0.0.1"
+    # Zeptáme se uživatele na IP adresu hry
+    UDP_IP = input("Zadej IP adresu (Enter pro localhost): ").strip()
+    if not UDP_IP:
+        UDP_IP = "127.0.0.1"  # Výchozí hodnota je localhost
+
     UDP_PORT = 5568  # Standardní port pro sACN
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((UDP_IP, UDP_PORT))
+
+    print(f"Poslouchám na {UDP_IP}:{UDP_PORT}...")
 
     while True:
         packet_data, _ = sock.recvfrom(1024)
