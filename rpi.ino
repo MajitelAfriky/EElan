@@ -15,6 +15,7 @@ unsigned long preMil[9];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 int blinkVal[10];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 int blinkInt[10];// = {0, 250, 250, 250, 250, 0, 0, 0, 0};
 bool ledState[9];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+int eventVal[5];
 bool light = true;
 Adafruit_NeoPixel pixels(NEO_PIX, NEO, NEO_GRB + NEO_KHZ800);
 
@@ -45,9 +46,10 @@ void dmx() {
   if (Serial.available() > 0) {
     String receivedData = Serial.readStringUntil('\n');
     char buffer[50];  // Dočasné pole pro převedení Stringu na C-string
-    receivedData.toCharArray(buffer, sizeof(buffer)); //                 reaktor       paprsky       torpedo        manev        impuls         warp           jump          front         rear
-    int parsedValues = sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d", &blinkVal[1], &blinkVal[2], &blinkVal[3], &blinkVal[4], &blinkVal[5], &blinkVal[6], &blinkVal[20], &blinkVal[7], &blinkVal[8], &blinkVal[9]);
-  } else {
+    receivedData.toCharArray(buffer, sizeof(buffer)); //                                reaktor       paprsky       torpedo        manev        impuls         warp           jump          front         rear
+    int parsedValues = sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &blinkVal[1], &blinkVal[2], &blinkVal[3], &blinkVal[4], &blinkVal[5], &blinkVal[6], &blinkVal[20], &blinkVal[7], &blinkVal[8],
+                                                                                      &eventVal[0], &eventVal[1], &eventVal[2], &eventVal[3], &eventVal[4], &eventVal[5] );
+  } else {//                                                                             yellow         red         docking         dock          hull        shields
     for (int i = 1; i <= 9; i++) {
         blinkVal[i] = 0;
     }
@@ -114,7 +116,7 @@ void joystick() {
     if (btnState[i] == LOW)   {button(i, true);}  else {button(i, false);}
   }
   for (int i = 1; i <= 8; i++) {
-    if (btnState1[i] == LOW)  {button(i, true);} else {button(i, false);}
+    if (btnState1[i] == LOW)  {button(10 + i, true);} else {button(10 + i, false);}
   }
   
   int value_x;
@@ -151,11 +153,32 @@ void button(int n, bool tf) {
 }
 
 void intro() {
-  for (int i = 1; i <= 8; i++) {
-    digitalWrite(lght1[i], HIGH);
-    delay(60);
-    digitalWrite(lght1[i], LOW);
+  for(int j = 1; j < 3; j++) {
+    for (int i = 1; i <= 4; i++) {
+      digitalWrite(lght1[i], HIGH);
+      delay(60);
+    }
+    for (int i = 8; i >= 5; i--) {
+      digitalWrite(lght1[i], HIGH);
+      delay(60);
+    }
+    for (int i = 1; i <= 4; i++) {
+      digitalWrite(lght1[i], LOW);
+      delay(60);
+    }
+    for (int i = 8; i >= 5; i--) {
+      digitalWrite(lght1[i], LOW);
+      delay(60);
+    }
   }
+    for (int i = 1; i <= 4; i++) {
+      digitalWrite(lght1[i], HIGH);
+      delay(60);
+    }
+    for (int i = 8; i >= 5; i--) {
+      digitalWrite(lght1[i], HIGH);
+      delay(60);
+    }
   pixels.clear();
   for (int i = 0; i <= 6; i++) {
     pixels.setPixelColor(i, pixels.Color(0, 0, 200));
@@ -163,13 +186,12 @@ void intro() {
     pixels.show();
     delay(80);
   }
-  pixels.clear();
-  for (int i = 200; i >= 10; i--) {
-    pixels.fill((0, 0, i));
+  for (int i = 0; i <= 6; i++) {
+    pixels.setPixelColor(i, pixels.Color(0, 0, 20));
+    pixels.setPixelColor(13-i, pixels.Color(0, 0, 20));
     pixels.show();
-    delay(5);
+    delay(80);
   }
-
   digitalWrite(lght[4], HIGH);
   light = false;
 }
