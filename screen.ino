@@ -18,7 +18,7 @@ String hexColor;
 int pip = 1;
 int lever;
 //
-int event[15];
+int event[16];
 
 
 
@@ -69,8 +69,8 @@ void uDmxRecieve() {
     char buffer[50];  // Dočasné pole pro převedení Stringu na C-string
     receivedData.toCharArray(buffer, sizeof(buffer)); //                                reaktor   paprsky    torpedo    manev      impuls      warp       jump       front      rear
     int parsedValues = sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &event[0], &event[1], &event[2], &event[3], &event[4], &event[5], &event[6], &event[7], &event[8],
-                                                                                      &event[9], &event[10], &event[11], &event[12], &event[13], &event[14] );
-    //                                                                                 yellow       red       docking       dock        hull       shields
+                                                                                      &event[9], &event[10], &event[11], &event[12], &event[13], &event[14], &event[15] );
+    //                                                                                 yellow       red       docking       dock       hull%     shieldsF%    shieldsR%
     uCases();
     lever = digitalRead(10);
   }
@@ -81,80 +81,49 @@ void uDmxRecieve() {
 
 void uCases() {
   if (event[9] == 255) {//yellow
-    uAni(9,174);
+    uAni(1, 255, 165, 0);
+  } else {
+    uAni(1, 0, 0, 0);
   }
   if (event[10] == 255) {//red
-    uAni(9,0);
+    uAni(1, 255, 0, 0);
+  } else {
+    uAni(1, 0, 0, 0);
   }
-  if (event[14] == 255) {//shields
-    uAni(14,0);
-  }
+  uAni(2, 0, 0, 0);//ship
   matrix.show();
 
 
+
 }
 
-void uAni(int val, int g) {
+void uAni(int val, int r, int g, int b) {
   switch (val) {
-    case 9:
-      for (int i = 0; i < 2; i++ ) {
-        for (int j = 0 j < 7; j++ ) {
-          matrix.drawPixel(i, j, matrix.Color(255, g, 0));
-        }
-      }
-      /*for (int i = 5; i < 7; i++ ) {
-        for (int j = 0; j < 7; j++ ) {
-          matrix.drawPixel(i, j, matrix.Color(255, g, 0));
-        }
-      }
-      for (int i = 0; i < 7; i++ ) {
-        for (int j = 0; j < 2; j++ ) {
-          matrix.drawPixel(i, j, matrix.Color(255, g, 0));
-        }
-      }
-      for (int i = 0; i < 7; i++ ) {
-        for (int j = 5; j <= 7; j++ ) {
-          matrix.drawPixel(i, j, matrix.Color(255, g, 0));
-        }
-      }*/
+    case 1:
+      matrix.fillScreen(matrix.Color(r, g, b));
       break;
-    case 10:
+    case 2:
+      //front shield
+      matrix.drawPixel(3, 0, matrix.Color(0, 0, 200));
+      matrix.drawPixel(4, 0, matrix.Color(0, 0, 200));
+      matrix.drawPixel(2, 1, matrix.Color(0, 0, 200));
+      matrix.drawPixel(5, 1, matrix.Color(0, 0, 200));
+      matrix.drawPixel(2, 2, matrix.Color(0, 0, 200));
+      matrix.drawPixel(5, 2, matrix.Color(0, 0, 200));
+      //hull
+      for (int i = 3; i < 4; i++){
+        for (int j = 1; j < 5; j++) {
+          matrix.drawPixel(i, j, matrix.Color(0, 0, 200));
+        }
+      }
 
-
-      break;
-    case 14:
-      matrix.drawPixel(0, 0, matrix.Color(0, 0, 255));
-      matrix.drawPixel(0, 1, matrix.Color(0, 0, 255));
-      matrix.drawPixel(0, 2, matrix.Color(0, 0, 255));
-      matrix.drawPixel(1, 0, matrix.Color(0, 0, 255));
-      matrix.drawPixel(1, 1, matrix.Color(0, 0, 255));
-      matrix.drawPixel(2, 0, matrix.Color(0, 0, 255));
-      matrix.drawPixel(0, 7, matrix.Color(0, 0, 255));
-      matrix.drawPixel(0, 6, matrix.Color(0, 0, 255));
-      matrix.drawPixel(0, 5, matrix.Color(0, 0, 255));
-      matrix.drawPixel(1, 7, matrix.Color(0, 0, 255));
-      matrix.drawPixel(1, 6, matrix.Color(0, 0, 255));
-      matrix.drawPixel(2, 7, matrix.Color(0, 0, 255));
-      matrix.drawPixel(7, 0, matrix.Color(0, 0, 255));
-      matrix.drawPixel(7, 1, matrix.Color(0, 0, 255));
-      matrix.drawPixel(7, 2, matrix.Color(0, 0, 255));
-      matrix.drawPixel(6, 0, matrix.Color(0, 0, 255));
-      matrix.drawPixel(6, 1, matrix.Color(0, 0, 255));
-      matrix.drawPixel(5, 0, matrix.Color(0, 0, 255));
-      matrix.drawPixel(7, 7, matrix.Color(0, 0, 255));
-      matrix.drawPixel(7, 6, matrix.Color(0, 0, 255));
-      matrix.drawPixel(7, 5, matrix.Color(0, 0, 255));
-      matrix.drawPixel(6, 7, matrix.Color(0, 0, 255));
-      matrix.drawPixel(6, 6, matrix.Color(0, 0, 255));
-      matrix.drawPixel(5, 7, matrix.Color(0, 0, 255));
       break;
     default:
-
-
-
+      // statements
       break;
+  }
 }
-}
+
 
 
 
