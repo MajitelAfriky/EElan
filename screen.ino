@@ -68,7 +68,7 @@ void uDmxRecieve() {
     String receivedData = Serial.readStringUntil('\n');
     char buffer[50];  // Dočasné pole pro převedení Stringu na C-string
     receivedData.toCharArray(buffer, sizeof(buffer)); //                                reaktor   paprsky    torpedo    manev      impuls      warp       jump       front      rear
-    int parsedValues = sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &event[0], &event[1], &event[2], &event[3], &event[4], &event[5], &event[6], &event[7], &event[8],
+    int parsedValues = sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &event[0], &event[1], &event[2], &event[3], &event[4], &event[5], &event[6], &event[7], &event[8],
                                                                                       &event[9], &event[10], &event[11], &event[12], &event[13], &event[14], &event[15] );
     //                                                                                 yellow       red       docking       dock       hull%     shieldsF%    shieldsR%
     uCases();
@@ -80,17 +80,22 @@ void uDmxRecieve() {
 
 
 void uCases() {
-  if (event[9] == 255) {//yellow
+  if (event[9] == 255) {//yellow       
     uAni(1, 255, 165, 0);
-  } else {
-    uAni(1, 0, 0, 0);
-  }
-  if (event[10] == 255) {//red
+  } else if (event[10] == 255) {//red
     uAni(1, 255, 0, 0);
   } else {
     uAni(1, 0, 0, 0);
   }
-  uAni(2, 0, 0, 0);//ship
+  int r;
+  int g;
+  uGradient(event[14], r, g);
+  uAni(2, r, g, 0);//front shield
+  uGradient(event[13], r, g);
+  uAni(3, r, g, 0);//hull
+  uGradient(event[15], r, g);
+  uAni(4, r, g, 0);//rear shield
+
   matrix.show();
 
 
@@ -101,29 +106,49 @@ void uAni(int val, int r, int g, int b) {
   switch (val) {
     case 1:
       matrix.fillScreen(matrix.Color(r, g, b));
-      break;
+    break;
     case 2:
       //front shield
-      matrix.drawPixel(3, 0, matrix.Color(0, 0, 200));
-      matrix.drawPixel(4, 0, matrix.Color(0, 0, 200));
-      matrix.drawPixel(2, 1, matrix.Color(0, 0, 200));
-      matrix.drawPixel(5, 1, matrix.Color(0, 0, 200));
-      matrix.drawPixel(2, 2, matrix.Color(0, 0, 200));
-      matrix.drawPixel(5, 2, matrix.Color(0, 0, 200));
+      matrix.drawPixel(3, 0, matrix.Color(r, g, 0));
+      matrix.drawPixel(4, 0, matrix.Color(r, g, 0));
+      matrix.drawPixel(2, 1, matrix.Color(r, g, 0));
+      matrix.drawPixel(5, 1, matrix.Color(r, g, 0));
+      matrix.drawPixel(2, 2, matrix.Color(r, g, 0));
+      matrix.drawPixel(5, 2, matrix.Color(r, g, 0));
+    break;
+    case 3:
       //hull
-      for (int i = 3; i < 4; i++){
-        for (int j = 1; j < 5; j++) {
-          matrix.drawPixel(i, j, matrix.Color(0, 0, 200));
-        }
+      for (int i = 1; i <= 5; i++){
+        matrix.drawPixel(3, i, matrix.Color(r, g, 0));
+        matrix.drawPixel(4, i, matrix.Color(r, g, 0));
       }
+    break;
+    case 4:
+      //rear shield
+      matrix.drawPixel(1, 7, matrix.Color(r, g, 0));
+      matrix.drawPixel(6, 7, matrix.Color(r, g, 0));
+      for (int i = 1; i <= 6; i++) {
+        matrix.drawPixel(i, 6, matrix.Color(r, g, 0));
+      }
+      matrix.drawPixel(2, 5, matrix.Color(r, g, 0));
+      matrix.drawPixel(5, 5, matrix.Color(r, g, 0));
 
-      break;
+    break;
     default:
       // statements
       break;
   }
 }
 
+void uGradient(int value, int &r, int &g) {//0 0 0 0 0 0 0 0 0 0 0 0 0 98 80 55
+  if (value <= 127) {
+    r = 255;  // Červená
+    g = map(value, 80, 167, 0, 255);  // Zelená roste od 0 do 255
+  } else {
+    r = map(value, 168, 255, 255, 0);  // Červená klesá od 255 do 0
+    g = 255;  // Zelená
+  }
+}
 
 
 
