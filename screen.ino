@@ -19,6 +19,10 @@ int pip = 1;
 int lever;
 //
 int event[16];
+unsigned long startMillis = 0;
+unsigned long currentMillis;
+int on = false;
+
 
 
 
@@ -80,10 +84,10 @@ void uDmxRecieve() {
 
 
 void uCases() {
-  if (event[9] == 255) {//yellow       
-    uAni(1, 255, 165, 0);
-  } else if (event[10] == 255) {//red
-    uAni(1, 255, 0, 0);
+  if (event[9] == 255) {//yellow          0 0 0 0 0 0 0 0 0 255 0 0 0 130 200 100
+    uAni(1, 179, 149, 0);
+  } else if (event[10] == 255) {//red     0 0 0 0 0 0 0 0 0 0 255 0 0 130 200 100
+    uAni(1, 179, 0, 0);
   } else {
     uAni(1, 0, 0, 0);
   }
@@ -105,7 +109,18 @@ void uCases() {
 void uAni(int val, int r, int g, int b) {
   switch (val) {
     case 1:
+    currentMillis = millis();
+    if (currentMillis - startMillis >= 500)
+    {
+      startMillis = currentMillis;
+      on = !on;
+    }
+    if (on) {
       matrix.fillScreen(matrix.Color(r, g, b));
+    } else {
+      matrix.fillScreen(0);
+
+    }
     break;
     case 2:
       //front shield
@@ -141,11 +156,14 @@ void uAni(int val, int r, int g, int b) {
 }
 
 void uGradient(int value, int &r, int &g) {//0 0 0 0 0 0 0 0 0 0 0 0 0 98 80 55
-  if (value <= 127) {
+  if (value <= 90 ) {
+    r = 255;
+    g = 0;
+  } else if (value <= 172) {
     r = 255;  // Červená
-    g = map(value, 80, 167, 0, 255);  // Zelená roste od 0 do 255
+    g = map(value, 90, 172, 0, 255);  // Zelená roste od 0 do 255
   } else {
-    r = map(value, 168, 255, 255, 0);  // Červená klesá od 255 do 0
+    r = map(value, 172, 255, 255, 0);  // Červená klesá od 255 do 0
     g = 255;  // Zelená
   }
 }
