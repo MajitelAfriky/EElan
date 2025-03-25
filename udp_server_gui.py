@@ -72,7 +72,8 @@ def create_gui():
     port_names.insert(0, "Žádný")
     
     root = tk.Tk()
-    root.title("Nastavení sACN -> Serial")
+    root.iconbitmap("station-engineering-black.ico")
+    root.title("UDP Server")
     
     global com1_var, com2_var, ip_var, last_packet_var, stop_event
     com1_var = tk.StringVar(value=port_names[1] if len(port_names) > 1 else "")
