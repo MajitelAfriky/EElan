@@ -15,7 +15,7 @@ unsigned long preMil[9];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 int blinkVal[10];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 int blinkInt[10];// = {0, 250, 250, 250, 250, 0, 0, 0, 0};
 bool ledState[9];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-int eventVal[5];
+int eventVal[6];
 bool light = true;
 Adafruit_NeoPixel pixels(NEO_PIX, NEO, NEO_GRB + NEO_KHZ800);
 
@@ -47,9 +47,9 @@ void dmx() {
     String receivedData = Serial.readStringUntil('\n');
     char buffer[50];  // Dočasné pole pro převedení Stringu na C-string
     receivedData.toCharArray(buffer, sizeof(buffer)); //                                reaktor       paprsky       torpedo        manev        impuls         warp           jump          front         rear
-    int parsedValues = sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &blinkVal[1], &blinkVal[2], &blinkVal[3], &blinkVal[4], &blinkVal[5], &blinkVal[6], &blinkVal[20], &blinkVal[7], &blinkVal[8],
-                                                                                      &eventVal[0], &eventVal[1], &eventVal[2], &eventVal[3], &eventVal[4], &eventVal[5] );
-  } else {//                                                                             yellow         red         docking         dock          hull        shields
+    int parsedValues = sscanf(buffer, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &blinkVal[1], &blinkVal[2], &blinkVal[3], &blinkVal[4], &blinkVal[5], &blinkVal[6], &blinkVal[20], &blinkVal[7], &blinkVal[8],
+                                                                                      &eventVal[0], &eventVal[1], &eventVal[2], &eventVal[3], &eventVal[4], &eventVal[5], &eventVal[6] );
+  } else {//                                                                             yellow         red         docking        dock          hull%       shieldsF%     shieldsR%
     for (int i = 1; i <= 9; i++) {
         blinkVal[i] = 0;
     }
