@@ -1,3 +1,5 @@
+import os
+import sys
 import socket
 import struct
 import serial
@@ -6,6 +8,15 @@ import serial.tools.list_ports
 import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
+
+def get_resource_path(relative_path):
+    """ Vrátí správnou cestu k souboru, ať už běží jako .py nebo .exe """
+    if getattr(sys, 'frozen', False):  # Pokud běží jako zkompilovaný .exe
+        base_path = sys._MEIPASS
+    else:  # Pokud běží normálně jako .py
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def list_serial_ports():
     ports = list(serial.tools.list_ports.comports())
@@ -72,7 +83,8 @@ def create_gui():
     port_names.insert(0, "Žádný")
     
     root = tk.Tk()
-    root.iconbitmap("station-engineering-black.ico")
+    icon_path = get_resource_path("station-engineering-black.ico")  # Získáme správnou cestu
+    root.iconbitmap(icon_path)  # Nastavíme ikonu
     root.title("UDP Server")
     
     global com1_var, com2_var, ip_var, last_packet_var, stop_event
