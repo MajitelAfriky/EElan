@@ -12,11 +12,14 @@ int btnState1[9];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 const int lght[] = {0, 0, 0, 0, 15};
 const int lght1[] = {0, 2, 3, 4, 5, 21, 20, 19, 18};
 unsigned long preMil[9];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+unsigned long warMil;
 int blinkVal[10];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 int blinkInt[10];// = {0, 250, 250, 250, 250, 0, 0, 0, 0};
 bool ledState[9];// = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 int eventVal[6];
 bool light = true;
+bool on = true;
+
 Adafruit_NeoPixel pixels(NEO_PIX, NEO, NEO_GRB + NEO_KHZ800);
 
 void setup() {
@@ -102,8 +105,30 @@ void heat() {
       digitalWrite(lght1[i], true);
     }
   }
-
+  if (eventVal[0] == 255 || eventVal[1] == 255) {
+    if (currentMillis - warMil >= 400){
+      warMil = currentMillis;
+      on = !on;
+    }
+    if (on) {
+      if(eventVal[0] == 255) {
+        pixels.fill(pixels.Color(0, 30, 0));
+        pixels.show();
+      }else if (eventVal[1] == 255) {
+        pixels.fill(pixels.Color(30, 0, 0));
+        pixels.show();
+      }
+    } else {
+        pixels.fill(pixels.Color(0, 0, 0));
+        pixels.show();
+    }
+  } else {
+    pixels.fill(pixels.Color(0, 0, 20));
+    pixels.show();
+  }
 }
+
+
 
 void joystick() {
   for (int i = 1; i <= 4; i++) {
