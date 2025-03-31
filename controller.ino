@@ -112,7 +112,7 @@ void heat() {
     }
     if (on) {
       if(eventVal[0] == 255) {
-        pixels.fill(pixels.Color(0, 30, 0));
+        pixels.fill(pixels.Color(15, 15, 0));
         pixels.show();
       }else if (eventVal[1] == 255) {
         pixels.fill(pixels.Color(30, 0, 0));
